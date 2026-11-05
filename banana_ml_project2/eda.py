@@ -3,9 +3,7 @@ Quick data checks and exploratory plots.
 """
 
 import matplotlib.pyplot as plt
-
 import config
-
 
 def check_data(df, dataset):
     print("Bananas per dosage (raw readings):")
@@ -15,7 +13,6 @@ def check_data(df, dataset):
     print(f"\nTraining rows: {len(dataset)}")
     print(f"days_remaining range: {dataset[config.TARGET].min()} - {dataset[config.TARGET].max()}")
     print(f"colour_value range (should be 1-7): {df[config.COLOUR_COL].min()} - {df[config.COLOUR_COL].max()}\n")
-
 
 def plot_trends(df, dataset, save_path=None):
     fig, axes = plt.subplots(1, 3, figsize=(15, 4))

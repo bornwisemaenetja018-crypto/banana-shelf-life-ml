@@ -1,23 +1,17 @@
 """
-Loads the day-by-day banana readings (cleaning obvious spreadsheet quirks),
+Loads the day-by-day banana readings,
 or generates a synthetic dataset with the same columns so the whole pipeline
 can be tested before/alongside real data collection.
-
 Columns used: banana_id, day, kmno4_dosage, ethylene_ppm, colour_value,
 quality_stage. Any other columns in CSV are ignored.
 """
 
 import re
-
 import numpy as np
 import pandas as pd
-
 import config
 
-
-# ------------------------------------------------------------------
 # Cleaning helpers
-# ------------------------------------------------------------------
 
 def clean_dosage(value) -> int:
     """Turns 'None' / 'Control' / '10 g' / '10g' / 10 into 0 / 10 / 20."""
@@ -28,7 +22,6 @@ def clean_dosage(value) -> int:
     if digits == "":
         raise ValueError(f"Could not read kmno4_dosage value: {value!r}")
     return int(float(digits))
-
 
 def clean_colour(value) -> int:
     """Keeps colour_value inside the valid 1-7 scale. An 8 usually means
@@ -42,17 +35,14 @@ def clean_colour(value) -> int:
         v = max(config.COLOUR_MIN, min(config.COLOUR_MAX, v))
     return v
 
-
 def clean_stage(value) -> str:
     return str(value).strip().lower().replace("_", "-").replace(" ", "-")
-
 
 def _normalise_headers(df: pd.DataFrame) -> pd.DataFrame:
     """'Banana ID' -> 'banana_id', ' Day ' -> 'day', etc."""
     df = df.copy()
     df.columns = [re.sub(r"\s+", "_", str(c).strip().lower()) for c in df.columns]
     return df
-
 
 def clean_dataframe(raw: pd.DataFrame) -> pd.DataFrame:
     """Validates and cleans a raw day-by-day dataframe. Fails loudly (with
@@ -93,9 +83,8 @@ def clean_dataframe(raw: pd.DataFrame) -> pd.DataFrame:
         )
 
     return df.sort_values([config.GROUP_COL, config.DAY_COL]).reset_index(drop=True)
-
-
-# Synthetic data (same columns as the real spreadsheet)
+ 
+#Synthetic data (same columns as the real spreadsheet)
 
 def generate_synthetic_data(n_replicates=3, days=range(1, 22), seed=config.RANDOM_STATE):
     """One hidden 'ripening progress' drives BOTH ethylene and colour, and
@@ -136,15 +125,14 @@ def generate_synthetic_data(n_replicates=3, days=range(1, 22), seed=config.RANDO
                 })
     return pd.DataFrame(rows)
 
-
 def load_data() -> pd.DataFrame:
     """Returns the cleaned day-by-day dataframe (synthetic or real)."""
     if config.USE_SYNTHETIC_DATA:
         print("Using SYNTHETIC data - set USE_SYNTHETIC_DATA=False in config.py for real data.")
         return generate_synthetic_data()
 
-    # keep_default_na=False + dtype=str: the text "None" in the dosage column
-    # stays as text instead of being turned into a missing value.
+    #keep_default_na=False + dtype=str: the text "None" in the dosage column
+    #stays as text instead of being turned into a missing value.
     raw = pd.read_csv(config.REAL_DATA_PATH, dtype=str, keep_default_na=False)
     df = clean_dataframe(raw)
     print(f"Loaded and cleaned real data from {config.REAL_DATA_PATH} "

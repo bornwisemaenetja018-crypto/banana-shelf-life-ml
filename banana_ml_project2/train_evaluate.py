@@ -1,6 +1,5 @@
 """
 Cross-validated evaluation for the remaining-days models.
-
 GroupKFold, grouped by banana_id: every reading from one banana stays in the
 same fold, so the model is always tested on bananas it has never seen any
 part of. (Plain random splitting would let it "recognise" a banana from its
@@ -10,19 +9,15 @@ neighbouring days and inflate the score.)
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
 from sklearn.model_selection import GroupKFold, cross_validate, cross_val_predict
 from sklearn.metrics import mean_absolute_error, r2_score
-
 import config
-
 
 def get_xy_groups(dataset: pd.DataFrame):
     X = dataset[config.FEATURES_NUM + config.FEATURES_CAT]
     y = dataset[config.TARGET]
     groups = dataset[config.GROUP_COL]
     return X, y, groups
-
 
 def make_cv(groups):
     n_groups = groups.nunique()
@@ -36,7 +31,6 @@ def make_cv(groups):
         print(f"NOTE: only {n_groups} bananas -> {n_splits} folds with very few bananas each. "
               f"Treat the scores below as a rough range, not a precise number.\n")
     return GroupKFold(n_splits=n_splits)
-
 
 def compare_models(X, y, groups, models: dict):
     """Prints MAE (days), RMSE (days) and R2 for each model, averaged over folds."""
@@ -54,7 +48,6 @@ def compare_models(X, y, groups, models: dict):
         print(f"  RMSE: {rmse.mean():.2f} +/- {rmse.std():.2f} days   (punishes big misses)")
         print(f"  R2  : {r2.mean():.2f} +/- {r2.std():.2f}        (1 = perfect, 0 = no better than the average)\n")
     return results
-
 
 def predicted_vs_actual(pipe, X, y, groups, dataset, save_path=None):
     """Out-of-fold predictions (each banana predicted by a model that never saw
@@ -83,7 +76,6 @@ def predicted_vs_actual(pipe, X, y, groups, dataset, save_path=None):
         print(f"Saved predicted-vs-actual plot to {save_path}")
     plt.close(fig)
     return pred
-
 
 def feature_importance(pipe, X, y, save_path=None):
     """Fits on all data and ranks which input matters most for the prediction."""
