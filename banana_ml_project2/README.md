@@ -1,40 +1,71 @@
 # Banana KMnO4 - Remaining Shelf-Life Prediction
 
-**Goal:** from today's readings, predict how many MORE days a banana has before
-its shelf life ends (first day it reaches over-ripe or decayed).
+Machine-learning model for predicting the remaining shelf life of bananas using storage day, ethylene concentration and KMnO4 treatment dosage.
 
-## What the model sees
-- `day`, `ethylene_ppm`, `ethylene_rate` (ppm/day since the previous reading), `kmno4_dosage` (0/10/20 g)
-- NOT `colour_value` / `quality_stage`: spoilage is defined from those, so giving
-  them to the model would let it read the answer off the colour chart.
-  (Flip `USE_COLOUR_AS_FEATURE` in config.py if you ever want that.)
-- Temperature and humidity are not used. Extra columns in your CSV are ignored.
+Objective
+Predict:
 
-## Files
-- `config.py`  - the only file you normally edit (data toggle, spoilage definition)
-- `data.py`    - loads/cleans your CSV (`Banana ID`, `None`, `10 g` etc. all handled)
-- `dataset.py` - builds days_remaining + ethylene_rate; reports bananas that never spoiled
-- `model.py`   - Random Forest, Linear Regression baseline, predict-the-average benchmark
-- `train_evaluate.py` - GroupKFold CV grouped by banana_id; MAE / RMSE / R2; plots
-- `main.py`    - runs everything
-- `predict.py` - `python predict.py` or `predict_remaining_days(...)`
-- `app.py`     - `streamlit run app.py` demo
-- `weight_analysis.py` - weight loss % per treatment (separate from the ML)
+How many days remain before a banana becomes over-ripe or decayed?
 
-## Run
-    pip install -r requirements.txt
-    python main.py
-    streamlit run app.py
+The project combines experimental banana-storage data with machine-learning models to estimate remaining shelf life.
 
-## Using real data
-1. config.py: `USE_SYNTHETIC_DATA = False`, set `REAL_DATA_PATH`.
-2. Needed columns: banana_id (or "Banana ID"), day, kmno4_dosage, ethylene_ppm, colour_value, quality_stage.
-3. Run `python main.py`.
+Inputs
+The models use:
 
-## Read the results honestly
-- Always compare the Random Forest to the "predict-the-average" benchmark. If it
-  isn't clearly better, the model has learned nothing.
-- With ~9 bananas the CV scores are a rough range, not a precise number.
-- Bananas that never spoil during the trial are excluded (censored). If your 20 g
-  bananas mostly don't spoil, the model never sees the longest shelf lives.
-- Synthetic-data scores say the code works, not that the model works on bananas.
+Storage day
+Ethylene concentration (ppm)
+KMnO4 dosage (0 g, 10 g, or 20 g)
+Target:
+
+Remaining shelf life (days)
+Peel colour and quality stage are excluded because spoilage is defined using those variables.
+
+Models Evaluated
+Linear Regression
+Decision Tree Regression
+Random Forest Regression
+K-Nearest Neighbours (KNN)
+Support Vector Regression (SVR)
+Dummy Regressor (benchmark)
+Random Forest was selected as the primary model because it provides feature-importance analysis.
+
+Validation
+Models are evaluated using GroupKFold cross-validation grouped by banana ID.
+
+Performance metrics:
+
+MAE (Mean Absolute Error)
+RMSE (Root Mean Squared Error)
+R² (Coefficient of Determination)
+Project Structure
+config.py            Configuration settings
+data.py              Data loading and cleaning
+dataset.py           Shelf-life dataset construction
+eda.py               Exploratory analysis and plots
+model.py             Machine-learning models
+train_evaluate.py    Validation and evaluation
+main.py              Main workflow
+predict.py           Prediction utility
+app.py               Streamlit application
+DATA.csv             Experimental dataset
+Running
+pip install -r requirements.txt
+python main.py
+Run the web application:
+
+streamlit run app.py
+Outputs
+Running main.py generates:
+
+trend_plots.png
+predicted_vs_actual.png
+feature_importance.png
+banana_remaining_days_rf_model.joblib
+Notes
+Bananas that do not reach spoilage are treated as censored observations and excluded from model training.
+This is a proof-of-concept study based on a small experimental dataset.
+Results should be interpreted together with the limitations discussed in the dissertation.
+Author
+Bornwise Koketso Maenetja
+Final-Year Chemical Engineering Project
+University of Johannesburg
