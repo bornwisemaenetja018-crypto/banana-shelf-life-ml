@@ -47,5 +47,9 @@ DOSAGE_CONTROL = 0
 DOSAGE_LOW = 10
 DOSAGE_HIGH = 20
 
-OUTPUT_DIR = "outputs"
-MODEL_PATH = f"{OUTPUT_DIR}/banana_remaining_days_rf_model.joblib"
+from pathlib import Path
+
+BASE_DIR = Path(__file__).parent
+
+OUTPUT_DIR = BASE_DIR / "outputs"
+MODEL_PATH = OUTPUT_DIR / "banana_remaining_days_rf_model.joblib"
