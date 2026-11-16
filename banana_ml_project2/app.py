@@ -13,9 +13,9 @@ from predict import predict_remaining_days
 
 st.set_page_config(page_title="Banana Shelf-Life Predictor", page_icon="🍌")
 
-st.title("🍌 Banana Remaining Shelf-Life Predictor by Bornwise")
+st.title("🍌 Banana Remaining Shelf-Life Predictor Software")
 st.write(
-    "Exploratory machine-learning demo for the final-year project. From today's "
+    "Exploratory machine-learning demo for IPJCHB3. From today's "
     "ethylene reading and the KMnO4 treatment, it estimates how many more days "
     "the banana has before its shelf life ends (over-ripe / decayed)."
 )
